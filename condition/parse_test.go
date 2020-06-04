@@ -80,8 +80,7 @@ func (c *testCommand) TestAnd(ctx Context, other bool) bool {
 
 func TestParseJSONExprData(t *testing.T) {
 	parser := NewExprParser()
-	cmd := &testCommand{NewBuiltInCommand()}
-	cmd.AddCtxCmdName("TestAnd")
+	cmd := &testCommand{NewBuiltInCommand("TestAnd")}
 	definedParser := NewExprParserWithCommand(cmd)
 	var tests = []struct {
 		in       map[string]interface{}

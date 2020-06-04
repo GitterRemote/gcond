@@ -68,19 +68,6 @@ func (e *ParseValueLengthError) Error() string {
 	return fmt.Sprintf("need values number is %v", e.length)
 }
 
-func getExp(expType, name string) (interface{}, error) {
-	switch expType {
-	case "op":
-		cmd, ok := operators[name]
-		if !ok {
-			return nil, ParseError(fmt.Sprintf("%s not exists", name))
-		}
-		return cmd, nil
-	default:
-		return nil, ParseError(fmt.Sprintf("%s type not exists", expType))
-	}
-}
-
 // ExprParser is a parser to parse expression of condition
 type ExprParser struct {
 	cmd    Command
