@@ -63,7 +63,7 @@ func TestParseJSONObjExp(t *testing.T) {
 		},
 	}
 
-	parser := NewExprParser()
+	parser := NewParser()
 	for _, test := range tests {
 		expr, err := parser.parseJSONExpr(test.in)
 		if err != nil {
@@ -87,13 +87,13 @@ func (c *testCommand) TestAnd(ctx Context, other bool) bool {
 }
 
 func TestParseJSONExprData(t *testing.T) {
-	parser := NewExprParser()
+	parser := NewParser()
 	cmd := &testCommand{NewBuiltInCommand("TestAnd")}
-	definedParser := NewExprParserWithCommand(cmd)
+	definedParser := NewParserWithCommand(cmd)
 	var tests = []struct {
 		in       map[string]interface{}
 		ctx      Context
-		parser   *ExprParser
+		parser   *Parser
 		expected bool
 	}{
 		{

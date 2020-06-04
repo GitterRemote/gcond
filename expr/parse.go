@@ -6,26 +6,11 @@ import (
 	"strings"
 )
 
-// ExprValue is an expression
-type ExprValue interface{}
+// Value is an expression
+// TODO: Consider to use ObjExpr to replace this type
+type Value interface{}
 
 type expJSONValues []interface{}
-
-func stoi(values []interface{}) ([]int, error) {
-	newValues := make([]int, len(values))
-	for i, v := range values {
-		newValues[i] = v.(int)
-	}
-	return newValues, nil
-}
-
-func stoa(values []interface{}) ([]string, error) {
-	newValues := make([]string, len(values))
-	for i, v := range values {
-		newValues[i] = v.(string)
-	}
-	return newValues, nil
-}
 
 type jsonExpr struct {
 	Name   string        `json:"name"`
@@ -69,8 +54,8 @@ func (e *ParseValueLengthError) Error() string {
 	return fmt.Sprintf("need values number is %v", e.length)
 }
 
-// ExprParser is a parser to parse expression of condition
-type ExprParser struct {
+// Parser is a parser to parse expression of condition
+type Parser struct {
 	cmd    Command
 	ctxCmd *CtxCommand
 }
@@ -78,17 +63,17 @@ type ExprParser struct {
 var cmd = NewBuiltInCommand()
 var ctxCmd = &CtxCommand{}
 
-// NewExprParser create a default ExprParser
-func NewExprParser() *ExprParser {
-	return &ExprParser{cmd, ctxCmd}
+// NewParser create a default ExprParser
+func NewParser() *Parser {
+	return &Parser{cmd, ctxCmd}
 }
 
-// NewExprParserWithCommand create a ExprParser with customised command
-func NewExprParserWithCommand(cmd Command) *ExprParser {
-	return &ExprParser{cmd, ctxCmd}
+// NewParserWithCommand create a ExprParser with customised command
+func NewParserWithCommand(cmd Command) *Parser {
+	return &Parser{cmd, ctxCmd}
 }
 
-func (p *ExprParser) parseValues(values []interface{}) ([]interface{}, error) {
+func (p *Parser) parseValues(values []interface{}) ([]interface{}, error) {
 	newValues := make([]interface{}, len(values))
 	for i, value := range values {
 		// refer: https://golang.org/pkg/encoding/json/#Unmarshal
@@ -117,7 +102,7 @@ type contextValue bool
 
 var ctxValue = contextValue(true)
 
-func (p *ExprParser) parseJSONExpr(jsonObj *jsonExpr) (ExprValue, error) {
+func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (Value, error) {
 	m := method(jsonObj.Name)
 
 	values, err := p.parseValues(jsonObj.Values)
@@ -156,7 +141,7 @@ func (p *ExprParser) parseJSONExpr(jsonObj *jsonExpr) (ExprValue, error) {
 // ParseJSONExprData parse a json object configuration of condition expression
 // examples:
 // {"type": "cmd", "name": "and", "values": []}
-func (p *ExprParser) ParseJSONExprData(data map[string]interface{}) (ExprValue, error) {
+func (p *Parser) ParseJSONExprData(data map[string]interface{}) (Value, error) {
 	jsonExp, err := loadJSONExpr(data)
 	if err != nil {
 		return nil, err
@@ -164,7 +149,7 @@ func (p *ExprParser) ParseJSONExprData(data map[string]interface{}) (ExprValue, 
 	return p.parseJSONExpr(jsonExp)
 }
 
-func (p *ExprParser) parseJSONExprString(expJSONStr string) (ExprValue, error) {
+func (p *Parser) parseJSONExprString(expJSONStr string) (Value, error) {
 	data := make(map[string]interface{})
 	err := json.Unmarshal([]byte(expJSONStr), &data)
 	if err != nil {
