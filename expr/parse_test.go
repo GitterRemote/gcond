@@ -1,6 +1,14 @@
-package condition
+package expr
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/GitterRemote/gcond/condition"
+)
+
+func NewContextWithValues(values map[string]interface{}) Context {
+	return condition.NewContextWithValues(values)
+}
 
 func TestParseJSONObjExp(t *testing.T) {
 	var tests = []struct {
@@ -145,7 +153,7 @@ func TestParseJSONExprData(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		expr, err := test.parser.parseJSONExprData(test.in)
+		expr, err := test.parser.ParseJSONExprData(test.in)
 		if err != nil {
 			t.Error("parse error:", err)
 			return

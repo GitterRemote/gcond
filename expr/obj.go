@@ -1,4 +1,4 @@
-package condition
+package expr
 
 import (
 	"fmt"
@@ -51,6 +51,7 @@ func (m *method) name() string {
 	return string(*m)
 }
 
+// refer: https://stackoverflow.com/questions/8103617/call-a-struct-and-its-method-by-name-in-go
 func (m *method) newObjMethodExpFromObjExpMethod(exp ObjExp, values ...interface{}) (objMethodExp, error) {
 	// TODO: check ObjExp's obj has the method in advance
 	return func(ctx Context) []reflect.Value {
@@ -98,13 +99,4 @@ func (m *method) NewObjExpFromObjMethod(obj interface{}, values ...interface{}) 
 		return nil, err
 	}
 	return m.newObjExpFromObjMethodExp(objMethodExp)
-}
-
-type nowObj struct {
-	//obj
-}
-
-// refer: https://stackoverflow.com/questions/8103617/call-a-struct-and-its-method-by-name-in-go
-func (o *nowObj) newExp() interface{} {
-	panic("")
 }

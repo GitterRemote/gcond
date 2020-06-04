@@ -1,4 +1,4 @@
-package condition
+package expr
 
 import (
 	"encoding/json"
@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-type expValue interface{}
+// ExprValue is an expression
+type ExprValue interface{}
 
 type expJSONValues []interface{}
 
@@ -99,7 +100,7 @@ func (p *ExprParser) parseValues(values []interface{}) ([]interface{}, error) {
 		case bool:
 			newValues[i] = v
 		case map[string]interface{}:
-			expValue, err := p.parseJSONExprData(v)
+			expValue, err := p.ParseJSONExprData(v)
 			if err != nil {
 				return nil, err
 			}
@@ -116,7 +117,7 @@ type contextValue bool
 
 var ctxValue = contextValue(true)
 
-func (p *ExprParser) parseJSONExpr(jsonObj *jsonExpr) (expValue, error) {
+func (p *ExprParser) parseJSONExpr(jsonObj *jsonExpr) (ExprValue, error) {
 	m := method(jsonObj.Name)
 
 	values, err := p.parseValues(jsonObj.Values)
@@ -152,10 +153,10 @@ func (p *ExprParser) parseJSONExpr(jsonObj *jsonExpr) (expValue, error) {
 	return exp, nil
 }
 
-// parseJSONObjExpData parse a json object configuration of condition expression
+// ParseJSONExprData parse a json object configuration of condition expression
 // examples:
 // {"type": "cmd", "name": "and", "values": []}
-func (p *ExprParser) parseJSONExprData(data map[string]interface{}) (expValue, error) {
+func (p *ExprParser) ParseJSONExprData(data map[string]interface{}) (ExprValue, error) {
 	jsonExp, err := loadJSONExpr(data)
 	if err != nil {
 		return nil, err
@@ -163,11 +164,11 @@ func (p *ExprParser) parseJSONExprData(data map[string]interface{}) (expValue, e
 	return p.parseJSONExpr(jsonExp)
 }
 
-func (p *ExprParser) parseJSONExprString(expJSONStr string) (expValue, error) {
+func (p *ExprParser) parseJSONExprString(expJSONStr string) (ExprValue, error) {
 	data := make(map[string]interface{})
 	err := json.Unmarshal([]byte(expJSONStr), &data)
 	if err != nil {
 		return nil, err
 	}
-	return p.parseJSONExprData(data)
+	return p.ParseJSONExprData(data)
 }

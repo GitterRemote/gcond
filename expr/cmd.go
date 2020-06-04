@@ -1,7 +1,9 @@
-package condition
+package expr
 
 import (
 	"math"
+
+	"github.com/GitterRemote/gcond/condition"
 )
 
 // Command includes all funcs used in expression
@@ -63,11 +65,11 @@ func (c *BuiltInCommand) Len(o Lenable) int {
 // Condition create an ObjExp value by loading from condition ID
 func (c *BuiltInCommand) Condition(conditionID int) ObjExp {
 	// TODO: load condition first
-	var condition *Condition
-	if condition == nil {
+	var cond *condition.Condition
+	if cond == nil {
 		panic("not implemented")
 	}
 	return func(ctx Context) interface{} {
-		return condition.Evaluate(ctx)
+		return cond.Evaluate(ctx)
 	}
 }
