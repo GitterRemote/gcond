@@ -4,6 +4,7 @@ package condition
 type SimpleContext struct {
 	Context
 	conditionResults map[int]bool
+	values           map[string]interface{}
 }
 
 // ExistsError is a err occurred when setConditionResult
@@ -30,7 +31,18 @@ func (s *SimpleContext) SetConditionResult(conditionID int, result bool) (err er
 	return
 }
 
+// Value get value from context, only string key supported now
+func (s *SimpleContext) Value(key interface{}) interface{} {
+	val, _ := s.values[key.(string)]
+	return val
+}
+
 // NewContext create a SimpleContext
 func NewContext() Context {
 	return &SimpleContext{conditionResults: make(map[int]bool)}
+}
+
+// NewContextWithValues create a SimpleContext with values
+func NewContextWithValues(values map[string]interface{}) Context {
+	return &SimpleContext{conditionResults: make(map[int]bool), values: values}
 }

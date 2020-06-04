@@ -5,18 +5,54 @@ import (
 	"math"
 )
 
-var cmds = map[string]cmd{
+// Command includes all funcs used in expression
+type Command interface {
+	AddCtxCmdName(string)
+	HasCtxCmdName(string) bool
+}
+
+// BuiltInCommand implements some operator commands
+type BuiltInCommand struct {
+	operator
+	ctxCommandNames map[string]bool
+}
+
+// NewBuiltInCommand create a BuiltInCommand
+func NewBuiltInCommand() *BuiltInCommand {
+	return &BuiltInCommand{ctxCommandNames: make(map[string]bool)}
+}
+
+// AddCtxCmdName add name of func as a CtxCommand in Command
+func (c *BuiltInCommand) AddCtxCmdName(name string) {
+	c.ctxCommandNames[name] = true
+}
+
+// HasCtxCmdName check a cmd name is a CtxCommand or not
+func (c *BuiltInCommand) HasCtxCmdName(name string) bool {
+	_, ok := c.ctxCommandNames[name]
+	return ok
+}
+
+// CtxCommand includes all funcs used in expression but require Context as first parameter
+type CtxCommand struct{}
+
+// TestContext is a command used to test context
+func (c *CtxCommand) TestContext(ctx Context) bool {
+	return ctx.Value("test").(bool)
+}
+
+var cmds = map[string]cmdDeprecated{
 	"mod":       &modCMD{},
 	"len":       &lenCMD{},
 	"condition": &conditionCMD{},
 }
 
-type cmd interface {
+type cmdDeprecated interface {
 	NewExpFromValues(values []interface{}) (interface{}, error)
 }
 
 type modCMD struct {
-	cmd
+	cmdDeprecated
 }
 
 func (c *modCMD) execute(x, y int) int {
@@ -39,7 +75,7 @@ func (c *modCMD) NewExpFromValues(values []interface{}) (interface{}, error) {
 }
 
 type lenCMD struct {
-	cmd
+	cmdDeprecated
 }
 
 // Lenable defines the objects that have length
@@ -67,7 +103,7 @@ func (c *lenCMD) NewExpFromValues(values []interface{}) (interface{}, error) {
 }
 
 type conditionCMD struct {
-	cmd
+	cmdDeprecated
 }
 
 func (o *conditionCMD) NewExp(c Condition) (BoolExp, error) {

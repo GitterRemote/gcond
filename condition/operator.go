@@ -5,20 +5,22 @@ import (
 	"sort"
 )
 
-var operators = map[string]operator{
-	"and": &andOperator{},
-	"or":  &orOperator{},
-	"not": &notOperator{},
-	"eq":  &equalOperator{},
-	"in":  &inOperator{},
+var operators = map[string]interface{}{}
+
+type operator struct{}
+
+func (o *operator) And(values ...bool) bool {
+	for _, v := range values {
+		if !v {
+			return false
+		}
+	}
+	return true
 }
 
-type operator interface {
-	NewExpFromValues(values []interface{}) (BoolExp, error)
-}
+var op = &operator{}
 
 type conditionBasedOp interface {
-	operator
 	newExpFromBoolExps(boolExps ...BoolExp) (BoolExp, error)
 }
 

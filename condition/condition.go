@@ -12,7 +12,7 @@ type BoolExp func(ctx Context) bool
 type stringExp func(ctx Context) string
 type intExp func(ctx Context) int
 
-type expRegistry map[string]operator
+type expRegistry map[string]interface{}
 
 // Condition implement configuration.Condition
 type Condition struct {
