@@ -12,13 +12,14 @@ type Value interface{}
 
 type expJSONValues []interface{}
 
-type jsonExpr struct {
+// JSONExpr is an expression presented in Json structure
+type JSONExpr struct {
 	Name   string        `json:"name"`
 	Obj    string        `json:"obj"`
 	Values expJSONValues `json:"values"`
 }
 
-func loadJSONExpr(data map[string]interface{}) (*jsonExpr, error) {
+func loadJSONExpr(data map[string]interface{}) (*JSONExpr, error) {
 	cmdType := ""
 	cmdTypeData, ok := data["obj"]
 	if ok {
@@ -30,7 +31,7 @@ func loadJSONExpr(data map[string]interface{}) (*jsonExpr, error) {
 	if ok {
 		exprValues = expJSONValues(exprValuesData.([]interface{}))
 	}
-	jsonObj := jsonExpr{
+	jsonObj := JSONExpr{
 		Name:   data["name"].(string),
 		Obj:    cmdType,
 		Values: exprValues,
@@ -102,7 +103,8 @@ type contextValue bool
 
 var ctxValue = contextValue(true)
 
-func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (ObjExpr, error) {
+// ParseJSONExpr parse JSONExpr to ObjExpr
+func (p *Parser) ParseJSONExpr(jsonObj *JSONExpr) (ObjExpr, error) {
 	m := method(jsonObj.Name)
 
 	values, err := p.parseValues(jsonObj.Values)
@@ -144,7 +146,7 @@ func (p *Parser) ParseJSONExprData(data map[string]interface{}) (ObjExpr, error)
 	if err != nil {
 		return nil, err
 	}
-	return p.parseJSONExpr(jsonExp)
+	return p.ParseJSONExpr(jsonExp)
 }
 
 func (p *Parser) parseJSONExprString(expJSONStr string) (ObjExpr, error) {

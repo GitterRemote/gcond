@@ -12,11 +12,11 @@ func NewContextWithValues(values map[string]interface{}) Context {
 
 func TestParseJSONObjExp(t *testing.T) {
 	var tests = []struct {
-		in       *jsonExpr
+		in       *JSONExpr
 		expected bool
 	}{
 		{
-			&jsonExpr{
+			&JSONExpr{
 				Obj:    "cmd",
 				Name:   "And",
 				Values: []interface{}{true, true},
@@ -24,7 +24,7 @@ func TestParseJSONObjExp(t *testing.T) {
 			true,
 		},
 		{
-			&jsonExpr{
+			&JSONExpr{
 				Obj:    "cmd",
 				Name:   "And",
 				Values: []interface{}{false, true},
@@ -32,7 +32,7 @@ func TestParseJSONObjExp(t *testing.T) {
 			false,
 		},
 		{
-			&jsonExpr{
+			&JSONExpr{
 				Obj:  "cmd",
 				Name: "And",
 				Values: []interface{}{
@@ -47,7 +47,7 @@ func TestParseJSONObjExp(t *testing.T) {
 			true,
 		},
 		{
-			&jsonExpr{
+			&JSONExpr{
 				Obj:  "cmd",
 				Name: "And",
 				Values: []interface{}{
@@ -65,7 +65,7 @@ func TestParseJSONObjExp(t *testing.T) {
 
 	parser := NewParser()
 	for _, test := range tests {
-		expr, err := parser.parseJSONExpr(test.in)
+		expr, err := parser.ParseJSONExpr(test.in)
 		if err != nil {
 			t.Error("parse error:", err)
 			return

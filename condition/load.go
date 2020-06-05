@@ -10,11 +10,11 @@ type Loader interface {
 type dbLoader struct {
 }
 
-func loadFromStringEqualExpr(stringExprValue expr.Value, other string) *idCondition {
+func loadFromJSONExpr(jsonExpr expr.JSONExpr) Condition {
 	panic("")
 }
 
 // LoadByID load condition by id from database
-func (l *dbLoader) LoadByID(id int) *idCondition {
+func (l *dbLoader) LoadByID(id int) Condition {
 	panic("")
 }
