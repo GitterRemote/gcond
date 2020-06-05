@@ -14,13 +14,13 @@ type expJSONValues []interface{}
 
 type jsonExpr struct {
 	Name   string        `json:"name"`
-	Type   string        `json:"type"`
+	Obj    string        `json:"obj"`
 	Values expJSONValues `json:"values"`
 }
 
 func loadJSONExpr(data map[string]interface{}) (*jsonExpr, error) {
 	cmdType := ""
-	cmdTypeData, ok := data["type"]
+	cmdTypeData, ok := data["obj"]
 	if ok {
 		cmdType = strings.ToLower(cmdTypeData.(string))
 	}
@@ -32,7 +32,7 @@ func loadJSONExpr(data map[string]interface{}) (*jsonExpr, error) {
 	}
 	jsonObj := jsonExpr{
 		Name:   data["name"].(string),
-		Type:   cmdType,
+		Obj:    cmdType,
 		Values: exprValues,
 	}
 	return &jsonObj, nil
@@ -102,7 +102,7 @@ type contextValue bool
 
 var ctxValue = contextValue(true)
 
-func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (Value, error) {
+func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (ObjExpr, error) {
 	m := method(jsonObj.Name)
 
 	values, err := p.parseValues(jsonObj.Values)
@@ -110,9 +110,9 @@ func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (Value, error) {
 		return nil, err
 	}
 
-	var exp ObjExp
+	var exp ObjExpr
 
-	switch jsonObj.Type {
+	switch jsonObj.Obj {
 	case "", "cmd":
 		if p.cmd.HasCtxCmdName(jsonObj.Name) {
 			oldValues := values
@@ -126,10 +126,8 @@ func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (Value, error) {
 		copy(values[1:], oldValues)
 		values[0] = ctxValue
 		exp, err = m.NewObjExpFromObjMethod(p.ctxCmd, values...)
-	case "obj":
-		return nil, fmt.Errorf("not implemented error of type obj")
 	default:
-		return nil, fmt.Errorf("unknonw type : %v ", jsonObj.Type)
+		return nil, fmt.Errorf("unknonw obj: %v ", jsonObj.Obj)
 	}
 
 	if err != nil {
@@ -140,8 +138,8 @@ func (p *Parser) parseJSONExpr(jsonObj *jsonExpr) (Value, error) {
 
 // ParseJSONExprData parse a json object configuration of condition expression
 // examples:
-// {"type": "cmd", "name": "and", "values": []}
-func (p *Parser) ParseJSONExprData(data map[string]interface{}) (Value, error) {
+// {"obj": "cmd", "name": "and", "values": []}
+func (p *Parser) ParseJSONExprData(data map[string]interface{}) (ObjExpr, error) {
 	jsonExp, err := loadJSONExpr(data)
 	if err != nil {
 		return nil, err
@@ -149,7 +147,7 @@ func (p *Parser) ParseJSONExprData(data map[string]interface{}) (Value, error) {
 	return p.parseJSONExpr(jsonExp)
 }
 
-func (p *Parser) parseJSONExprString(expJSONStr string) (Value, error) {
+func (p *Parser) parseJSONExprString(expJSONStr string) (ObjExpr, error) {
 	data := make(map[string]interface{})
 	err := json.Unmarshal([]byte(expJSONStr), &data)
 	if err != nil {

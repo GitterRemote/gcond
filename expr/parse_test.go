@@ -3,11 +3,11 @@ package expr
 import (
 	"testing"
 
-	"github.com/GitterRemote/gcond/condition"
+	"github.com/GitterRemote/gcond/context"
 )
 
 func NewContextWithValues(values map[string]interface{}) Context {
-	return condition.NewContextWithValues(values)
+	return context.NewContextWithValues(values)
 }
 
 func TestParseJSONObjExp(t *testing.T) {
@@ -17,7 +17,7 @@ func TestParseJSONObjExp(t *testing.T) {
 	}{
 		{
 			&jsonExpr{
-				Type:   "cmd",
+				Obj:    "cmd",
 				Name:   "And",
 				Values: []interface{}{true, true},
 			},
@@ -25,7 +25,7 @@ func TestParseJSONObjExp(t *testing.T) {
 		},
 		{
 			&jsonExpr{
-				Type:   "cmd",
+				Obj:    "cmd",
 				Name:   "And",
 				Values: []interface{}{false, true},
 			},
@@ -33,7 +33,7 @@ func TestParseJSONObjExp(t *testing.T) {
 		},
 		{
 			&jsonExpr{
-				Type: "cmd",
+				Obj:  "cmd",
 				Name: "And",
 				Values: []interface{}{
 					true,
@@ -48,7 +48,7 @@ func TestParseJSONObjExp(t *testing.T) {
 		},
 		{
 			&jsonExpr{
-				Type: "cmd",
+				Obj:  "cmd",
 				Name: "And",
 				Values: []interface{}{
 					true,
@@ -70,7 +70,7 @@ func TestParseJSONObjExp(t *testing.T) {
 			t.Error("parse error:", err)
 			return
 		}
-		result := expr.(ObjExp)(nil)
+		result := expr(nil)
 		if result.(bool) != test.expected {
 			t.Error("error result")
 			return
@@ -98,7 +98,7 @@ func TestParseJSONExprData(t *testing.T) {
 	}{
 		{
 			map[string]interface{}{
-				"type":   "ctx",
+				"obj":    "ctx",
 				"name":   "TestContext",
 				"values": []interface{}{},
 			},
@@ -108,7 +108,7 @@ func TestParseJSONExprData(t *testing.T) {
 		},
 		{
 			map[string]interface{}{
-				"type":   "ctx",
+				"obj":    "ctx",
 				"name":   "TestContext",
 				"values": []interface{}{},
 			},
@@ -118,12 +118,12 @@ func TestParseJSONExprData(t *testing.T) {
 		},
 		{
 			map[string]interface{}{
-				"type": "cmd",
+				"obj":  "cmd",
 				"name": "And",
 				"values": []interface{}{
 					true,
 					map[string]interface{}{
-						"type": "ctx",
+						"obj":  "ctx",
 						"name": "TestContext",
 					},
 				},
@@ -158,7 +158,7 @@ func TestParseJSONExprData(t *testing.T) {
 			t.Error("parse error:", err)
 			return
 		}
-		result := expr.(ObjExp)(test.ctx)
+		result := expr(test.ctx)
 		if result.(bool) != test.expected {
 			t.Error("error result")
 			return

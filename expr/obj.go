@@ -5,12 +5,12 @@ import (
 	"reflect"
 )
 
-// ObjExp is an expression to evaluated to any interface{}
-type ObjExp func(ctx Context) interface{}
+// ObjExpr is an expression to evaluated to any interface{}
+type ObjExpr func(ctx Context) interface{}
 type objMethodExp func(ctx Context) []reflect.Value
 
 // NewObjExp create a object expression return obj as evaluted result, used in test
-func NewObjExp(obj interface{}) ObjExp {
+func NewObjExp(obj interface{}) ObjExpr {
 	return func(ctx Context) interface{} {
 		return obj
 	}
@@ -21,7 +21,7 @@ func evaluateValues(ctx Context, values []interface{}) (results []interface{}) {
 	results = make([]interface{}, len(values))
 	for i, value := range values {
 		switch v := value.(type) {
-		case ObjExp:
+		case ObjExpr:
 			results[i] = v(ctx)
 		case contextValue:
 			results[i] = ctx
@@ -52,7 +52,7 @@ func (m *method) name() string {
 }
 
 // refer: https://stackoverflow.com/questions/8103617/call-a-struct-and-its-method-by-name-in-go
-func (m *method) newObjMethodExpFromObjExpMethod(exp ObjExp, values ...interface{}) (objMethodExp, error) {
+func (m *method) newObjMethodExpFromObjExpMethod(exp ObjExpr, values ...interface{}) (objMethodExp, error) {
 	// TODO: check ObjExp's obj has the method in advance
 	return func(ctx Context) []reflect.Value {
 		inputs := evaluateValuesToReflectValue(ctx, values)
@@ -73,7 +73,7 @@ func (m *method) newObjMethodExpFromObjMethod(obj interface{}, values ...interfa
 }
 
 // Only One result value allow command(object method) return
-func (m *method) newObjExpFromObjMethodExp(exp objMethodExp) (ObjExp, error) {
+func (m *method) newObjExpFromObjMethodExp(exp objMethodExp) (ObjExpr, error) {
 	return func(ctx Context) interface{} {
 		reflectValues := exp(ctx)
 		if len(reflectValues) != 1 {
@@ -84,7 +84,7 @@ func (m *method) newObjExpFromObjMethodExp(exp objMethodExp) (ObjExp, error) {
 }
 
 // NewObjExpFromObjExpMethod new an expression from method of an ObjExp
-func (m *method) NewObjExpFromObjExpMethod(exp ObjExp, values ...interface{}) (ObjExp, error) {
+func (m *method) NewObjExpFromObjExpMethod(exp ObjExpr, values ...interface{}) (ObjExpr, error) {
 	objMethodExp, err := m.newObjMethodExpFromObjExpMethod(exp, values...)
 	if err != nil {
 		return nil, err
@@ -93,7 +93,7 @@ func (m *method) NewObjExpFromObjExpMethod(exp ObjExp, values ...interface{}) (O
 }
 
 // NewObjExpFromObjMethod new an expression from method of an Obj
-func (m *method) NewObjExpFromObjMethod(obj interface{}, values ...interface{}) (ObjExp, error) {
+func (m *method) NewObjExpFromObjMethod(obj interface{}, values ...interface{}) (ObjExpr, error) {
 	objMethodExp, err := m.newObjMethodExpFromObjMethod(obj, values...)
 	if err != nil {
 		return nil, err

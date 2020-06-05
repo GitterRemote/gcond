@@ -1,8 +1,8 @@
 package expr
 
-import "github.com/GitterRemote/gcond/condition"
-
 // Context interface required in expr package
 type Context interface {
-	condition.Context
+	Value(key interface{}) interface{}
+	TmpValue(key interface{}) (result interface{}, ok bool)
+	SetTmpValue(key interface{}, result interface{}) (err error)
 }

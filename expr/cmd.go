@@ -2,8 +2,6 @@ package expr
 
 import (
 	"math"
-
-	"github.com/GitterRemote/gcond/condition"
 )
 
 // Command includes all funcs used in expression
@@ -60,16 +58,4 @@ type Lenable interface {
 // Len call object's Len() method
 func (c *BuiltInCommand) Len(o Lenable) int {
 	return o.Len()
-}
-
-// Condition create an ObjExp value by loading from condition ID
-func (c *BuiltInCommand) Condition(conditionID int) ObjExp {
-	// TODO: load condition first
-	var cond *condition.Condition
-	if cond == nil {
-		panic("not implemented")
-	}
-	return func(ctx Context) interface{} {
-		return cond.Evaluate(ctx)
-	}
 }
