@@ -1,46 +1,34 @@
 package condition
 
+import "github.com/GitterRemote/gcond/expr"
+
 // Context is the data to be evaluated by the Condition
 type Context interface {
-	GetConditionResult(conditionID int) (result bool, ok bool)
-	SetConditionResult(conditionID int, result bool) (err error)
-	Value(key interface{}) interface{}
+	expr.Context
 }
 
-// BoolExp is expression under Condition
-type BoolExp func(ctx Context) bool
-type stringExp func(ctx Context) string
-type intExp func(ctx Context) int
-
-type expRegistry map[string]interface{}
-
-// Condition implement configuration.Condition
-type Condition struct {
-	ID  int
-	exp BoolExp
+// Condition can be evaluted to be ture or false
+type Condition interface {
+	GetID() interface{}
+	Evaluate(ctx Context) bool
 }
 
-// Evaluate the condition to a suc or fail value
-func (c *Condition) Evaluate(ctx Context) (rv bool) {
-	if c.ID != 0 {
-		if rv, ok := ctx.GetConditionResult(c.ID); ok {
-			return rv
-		}
-		rv = c.exp(ctx)
-		ctx.SetConditionResult(c.ID, rv)
-	} else {
-		rv = c.exp(ctx)
-	}
-	return
-}
+// BoolExpr is expression under Condition
+type BoolExpr func(ctx Context) bool
 
 // New a configuration.Condition
-func New(id int, exp BoolExp) *Condition {
-	return &Condition{id, exp}
+func New(id int, expr BoolExpr) Condition {
+	return &idCondition{id, expr}
+}
+
+// NewNaked new a condition only with expression
+func NewNaked(expr BoolExpr) Condition {
+	id := 0
+	return New(id, expr)
 }
 
 // NewTrueCondition always evaluted to true
-func NewTrueCondition() *Condition {
+func NewTrueCondition() Condition {
 	return New(0, func(ctx Context) bool {
 		return true
 	})

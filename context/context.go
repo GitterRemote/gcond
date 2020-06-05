@@ -2,7 +2,7 @@ package context
 
 // SimpleContext implments get/set condition results
 type SimpleContext struct {
-	conditionResults map[int]bool
+	conditionResults map[interface{}]interface{}
 	values           map[string]interface{}
 }
 
@@ -14,19 +14,19 @@ func (e ExistsError) Error() string {
 }
 
 // GetConditionResult get result of condition pre-evaluted
-func (s *SimpleContext) GetConditionResult(conditionID int) (result bool, ok bool) {
-	result, ok = s.conditionResults[conditionID]
+func (s *SimpleContext) TmpValue(key interface{}) (result interface{}, ok bool) {
+	result, ok = s.conditionResults[key]
 	return
 }
 
-// SetConditionResult cache a result of evaluted condition
-func (s *SimpleContext) SetConditionResult(conditionID int, result bool) (err error) {
-	_, ok := s.conditionResults[conditionID]
+// SetTmpValue cache a result of evaluted condition
+func (s *SimpleContext) SetTmpValue(key interface{}, result interface{}) (err error) {
+	_, ok := s.conditionResults[key]
 	if ok {
 		err = ExistsError("Condition result exists")
 		return
 	}
-	s.conditionResults[conditionID] = result
+	s.conditionResults[key] = result
 	return
 }
 
@@ -38,10 +38,10 @@ func (s *SimpleContext) Value(key interface{}) interface{} {
 
 // NewContext create a SimpleContext
 func NewContext() *SimpleContext {
-	return &SimpleContext{conditionResults: make(map[int]bool)}
+	return &SimpleContext{conditionResults: make(map[interface{}]interface{})}
 }
 
 // NewContextWithValues create a SimpleContext with values
 func NewContextWithValues(values map[string]interface{}) *SimpleContext {
-	return &SimpleContext{conditionResults: make(map[int]bool), values: values}
+	return &SimpleContext{conditionResults: make(map[interface{}]interface{}), values: values}
 }
