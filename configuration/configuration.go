@@ -2,6 +2,7 @@ package configuration
 
 import "github.com/GitterRemote/gcond/condition"
 
+// Context contains the data to be used during evaluation
 type Context interface {
 	condition.Context
 }
@@ -15,5 +16,10 @@ type Condition interface {
 type Configuration struct {
 	ID        int
 	Condition Condition
-	Result    string
+	Result    interface{}
+}
+
+// New a configuration
+func New(condition Condition, result interface{}) *Configuration {
+	return &Configuration{0, condition, result}
 }

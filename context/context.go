@@ -13,7 +13,7 @@ func (e ExistsError) Error() string {
 	return string(e)
 }
 
-// GetConditionResult get result of condition pre-evaluted
+// TmpValue get result of condition pre-evaluted
 func (s *SimpleContext) TmpValue(key interface{}) (result interface{}, ok bool) {
 	result, ok = s.conditionResults[key]
 	return
@@ -36,8 +36,8 @@ func (s *SimpleContext) Value(key interface{}) interface{} {
 	return val
 }
 
-// NewContext create a SimpleContext
-func NewContext() *SimpleContext {
+// New create a SimpleContext
+func New() *SimpleContext {
 	return &SimpleContext{conditionResults: make(map[interface{}]interface{})}
 }
 

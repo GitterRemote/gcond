@@ -1,10 +1,15 @@
 package configuration
 
-// Group is a group of Configurations
-type Group []Configuration
+// Group is the a group of configuration
+type Group interface {
+	Evaluate(ctx Context) (conf Configuration)
+}
+
+// group is a group of Configurations
+type group []Configuration
 
 // Evaluate the configuration
-func (g *Group) Evaluate(ctx Context) (conf Configuration) {
+func (g *group) Evaluate(ctx Context) (conf Configuration) {
 	for _, conf := range *g {
 		ok := conf.Condition.Evaluate(ctx)
 		if ok {
@@ -15,7 +20,7 @@ func (g *Group) Evaluate(ctx Context) (conf Configuration) {
 }
 
 // NewGroup a group
-func NewGroup(confs ...Configuration) *Group {
-	g := Group(confs)
+func NewGroup(confs ...Configuration) Group {
+	g := group(confs)
 	return &g
 }

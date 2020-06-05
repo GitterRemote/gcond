@@ -10,7 +10,7 @@ func TestCachedCondition_Evaluate(t *testing.T) {
 
 	c := cachedCondition{newFirstTrueIDCondition()}
 
-	ctx := context.NewContext()
+	ctx := context.New()
 	rv := c.Evaluate(ctx)
 	if rv != true {
 		t.Fatal("result error")
@@ -20,7 +20,7 @@ func TestCachedCondition_Evaluate(t *testing.T) {
 		t.Fatal("cached fail")
 	}
 
-	ctx = context.NewContext()
+	ctx = context.New()
 	rv = c.Evaluate(ctx)
 	if rv != false {
 		t.Fatal("cached error")
