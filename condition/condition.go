@@ -18,7 +18,7 @@ type BoolExpr func(ctx Context) bool
 
 // New a configuration.Condition
 func New(id int, expr BoolExpr) Condition {
-	return &idCondition{id, expr}
+	return &cachedCondition{&idCondition{id, expr}}
 }
 
 // NewNaked new a condition only with expression
